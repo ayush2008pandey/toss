@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toss — Mobile App</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F8FAFC;
+      --bg-oatmeal: #F1F5F9;
+      --bg-card: #FFFFFF;
+      --border-sand: #E2E8F0;
+      --terracotta: #0F172A;
+      --sienna: #EA580C;
+      --ochre: #F59E0B;
+      --rosewood: #EA580C;
+      --bronze: #475569;
+      --espresso: #0F172A;
+      --taupe: #64748B;
+      --stone: #94A3B8;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F1F5F9;
+      background-image: radial-gradient(#CBD5E1 1.25px, transparent 1.25px);
+      background-size: 20px 20px;
+      color: var(--espresso);
+      margin: 0;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    /* Phone shell */
+    .phone-frame {
+      width: 380px;
+      height: 780px;
+      border-radius: 52px;
+      background: #0F172A;
+      padding: 12px;
+      box-shadow: 0 28px 70px -15px rgba(15, 23, 42, 0.25), 0 0 0 2px #334155;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 42px;
+      background: var(--bg-canvas);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-notch {
+      width: 112px;
+      height: 26px;
+      background: #0F172A;
+      border-radius: 999px;
+      margin: 10px auto 4px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      flex-shrink: 0;
+      z-index: 30;
+    }
+    .screen-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+    }
+    .screen-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .screen-enter {
+      animation: smartAnimate 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes smartAnimate {
+      from { opacity: 0; transform: translateY(8px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Phone Frame Border -->
+  <div class="phone-frame">
+    <div class="phone-screen">
+
+      <!-- Dynamic Island / Notch -->
+      <div class="phone-notch">
+        <span class="w-2 h-2 rounded-full bg-[#334155]"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#1E293B] border border-[#475569]"></span>
+      </div>
+
+      <!-- Top App Status Bar -->
+      <div class="px-6 pt-1 pb-2 flex items-center justify-between text-[11px] font-semibold text-[#0F172A] bg-[#F8FAFC] border-b border-[#E2E8F0]/60 shrink-0">
+        <span>9:41</span>
+        <span class="font-display font-extrabold tracking-tight text-sm text-[#0F172A]">toss<span class="text-[#EA580C]">.</span></span>
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] font-bold text-[#EA580C] bg-[#EA580C]/10 px-1.5 py-0.5 rounded">5G</span>
+          <div class="w-4 h-2.5 border border-[#0F172A] rounded-[3px] p-[1px] flex items-center">
+            <div class="w-2.5 h-full bg-[#0F172A] rounded-[1px]"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Dynamic Screen Viewport -->
+      <main id="screen-viewport" class="screen-scroll"></main>
+
+      <!-- Bottom Tab Navigation -->
+      <nav class="bg-white/95 backdrop-blur-md border-t border-[#E2E8F0] px-3 py-2 flex items-center justify-around shrink-0 z-30">
+        <button onclick="navigate('home')" id="nav-home" class="flex flex-col items-center py-1 px-3 rounded-xl transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <span class="text-[10px] font-semibold mt-1">Home</span>
+        </button>
+        <button onclick="navigate('bowls')" id="nav-bowls" class="flex flex-col items-center py-1 px-3 rounded-xl transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <span class="text-[10px] font-semibold mt-1">Menu</span>
+        </button>
+        <button onclick="navigate('builder')" id="nav-builder" class="flex flex-col items-center -mt-5">
+          <div class="w-12 h-12 rounded-2xl bg-[#EA580C] text-white flex items-center justify-center shadow-lg shadow-[#EA580C]/30 border-2 border-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <span class="text-[10px] font-bold text-[#EA580C] mt-1">Toss</span>
+        </button>
+        <button onclick="navigate('clubs')" id="nav-clubs" class="flex flex-col items-center py-1 px-3 rounded-xl transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="text-[10px] font-semibold mt-1">Clubs</span>
+        </button>
+        <button onclick="navigate('orders')" id="nav-orders" class="flex flex-col items-center py-1 px-3 rounded-xl transition relative">
+          <span id="cart-badge" class="absolute top-0.5 right-2 w-4 h-4 bg-[#EA580C] text-white text-[9px] font-bold rounded-full flex items-center justify-center">1</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          <span class="text-[10px] font-semibold mt-1">Bag</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      screen: 'home',
+      filter: 'All',
+      selectedBowlId: 1,
+      builder: {
+        base: 'Warm Wild Rice + Baby Kale',
+        protein: 'Charred Harissa Chicken',
+        toppings: ['Pickled Red Onion', 'Roasted Sweet Potato', 'Crispy Chickpeas'],
+        dressing: 'Tahini Lemon Herb'
+      },
+      bag: [
+        { name: 'Harvest Sienna Bowl', note: 'Extra Crispy Chickpeas', price: 14.50, kcal: 610 }
+      ],
+      joinedClubs: ['Run & Toss Mile Club']
+    };
+
+    const bowls = [
+      {
+        id: 1,
+        name: 'Harvest Sienna Bowl',
+        tag: 'Chef Signature',
+        price: 14.50,
+        kcal: 610,
+        protein: '42g',
+        carbs: '54g',
+        fats: '22g',
+        category: 'Warm Bowls',
+        desc: 'Charred harissa chicken, roasted heirloom sweet potato, crispy spiced chickpeas, pickled shallots & tahini herb drizzle.',
+        color: '#EA580C'
+      },
+      {
+        id: 2,
+        name: 'Miso Glazed Salmon',
+        tag: 'Omega Rich',
+        price: 16.80,
+        kcal: 640,
+        protein: '38g',
+        carbs: '48g',
+        fats: '28g',
+        category: 'High Protein',
+        desc: 'Wild-caught blackened salmon, forbidden black rice, edamame, avocado, cucumber ribbons & toasted sesame ginger dressing.',
+        color: '#0F172A'
+      },
+      {
+        id: 3,
+        name: 'Mediterranean Crisp',
+        tag: 'Plant Power',
+        price: 13.20,
+        kcal: 520,
+        protein: '24g',
+        carbs: '58g',
+        fats: '19g',
+        category: 'Plant-Based',
+        desc: 'Herb falafel, whipped feta hummus, kalamata olives, cherry tomatoes, Za’atar pita chips & lemon oregano vinaigrette.',
+        color: '#16A34A'
+      },
+      {
+        id: 4,
+        name: 'Chimichurri Steak',
+        tag: 'Post-Workout',
+        price: 17.20,
+        kcal: 690,
+        protein: '49g',
+        carbs: '46g',
+        fats: '30g',
+        category: 'High Protein',
+        desc: 'Grass-fed seared flank steak, charred corn, black beans, cotija cheese, avocado & cilantro lime chimichurri.',
+        color: '#B45309'
+      }
+    ];
+
+    const builderOptions = {
+      bases: ['Warm Wild Rice + Baby Kale', 'Organic Arugula + Romaine', 'Forbidden Black Rice', 'Quinoa + Shredded Cabbage'],
+      proteins: ['Charred Harissa Chicken', 'Miso Glazed Wild Salmon (+$2)', 'Crispy Herb Tofu', 'Grass-Fed Chimichurri Steak (+$3)'],
+      toppings: ['Pickled Red Onion', 'Roasted Sweet Potato', 'Crispy Chickpeas', 'Avocado Mash', 'Soft Jammy Egg', 'Toasted Pumpkin Seeds'],
+      dressings: ['Tahini Lemon Herb', 'Miso Sesame Ginger', 'Green Goddess', 'Hot Honey Balsamic']
+    };
+
+    const clubs = [
+      {
+        name: 'Run & Toss Mile Club',
+        schedule: 'Saturdays · 8:30 AM',
+        location: 'SoHo Flagship Kitchen',
+        members: 142,
+        perk: '20% off post-run protein bowls'
+      },
+      {
+        name: 'Founders Lunch Table',
+        schedule: 'Wednesdays · 12:30 PM',
+        location: 'Flatiron Patio',
+        members: 89,
+        perk: 'Complimentary cold-pressed yuzu tonic'
+      },
+      {
+        name: 'Pilates & Greens Collective',
+        schedule: 'Sundays · 10:00 AM',
+        location: 'Williamsburg Studio',
+        members: 214,
+        perk: 'Free collagen or matcha booster'
+      }
+    ];
+
+    function navigate(screenName, bowlId = null) {
+      state.screen = screenName;
+      if (bowlId !== null) state.selectedBowlId = bowlId;
+      render();
+    }
+
+    function updateNavHighlight() {
+      const tabs = ['home', 'bowls', 'builder', 'clubs', 'orders'];
+      tabs.forEach(t => {
+        const el = document.getElementById('nav-' + t);
+        if (!el || t === 'builder') return;
+        if (state.screen === t || (state.screen === 'detail' && t === 'bowls')) {
+          el.classList.add('text-[#EA580C]', 'bg-[#EA580C]/10');
+          el.classList.remove('text-[#64748B]');
+        } else {
+          el.classList.remove('text-[#EA580C]', 'bg-[#EA580C]/10');
+          el.classList.add('text-[#64748B]');
+        }
+      });
+      const badge = document.getElementById('cart-badge');
+      if (badge) badge.textContent = state.bag.length;
+    }
+
+    function toggleTopping(item) {
+      const idx = state.builder.toppings.indexOf(item);
+      if (idx > -1) {
+        state.builder.toppings.splice(idx, 1);
+      } else if (state.builder.toppings.length < 4) {
+        state.builder.toppings.push(item);
+      }
+      render();
+    }
+
+    function addCustomBowlToBag() {
+      state.bag.push({
+        name: 'Custom Toss Bowl',
+        note: `${state.builder.protein} · ${state.builder.base}`,
+        price: 15.50,
+        kcal: 590
+      });
+      navigate('orders');
+    }
+
+    function addBowlToBag(id) {
+      const b = bowls.find(x => x.id === id);
+      if (b) {
+        state.bag.push({
+          name: b.name,
+          note: b.tag + ' · Standard Toss',
+          price: b.price,
+          kcal: b.kcal
+        });
+        navigate('orders');
+      }
+    }
+
+    function toggleClub(name) {
+      const i = state.joinedClubs.indexOf(name);
+      if (i > -1) state.joinedClubs.splice(i, 1);
+      else state.joinedClubs.push(name);
+      render();
+    }
+
+    function renderHome() {
+      return `
+        <div class="p-5 space-y-5 screen-enter">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-[#64748B]">Good afternoon, Maya</p>
+              <h1 class="text-xl font-extrabold text-[#0F172A] tracking-tight">Ready for a fresh toss?</h1>
+            </div>
+            <button onclick="navigate('orders')" class="bg-white border border-[#E2E8F0] px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              SoHo · 8m
+            </button>
+          </div>
+
+          <div class="bg-[#0F172A] text-white rounded-3xl p-4 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] uppercase tracking-wider font-bold bg-[#EA580C] px-2.5 py-0.5 rounded-full">Harvest Tier · 420 pts</span>
+              <span class="text-xs text-[#94A3B8]">1 toss away from free bowl</span>
+            </div>
+            <p class="font-display font-bold text-base mb-3">Weekly Ritual Streak: 3 of 4 Bowls</p>
+            <div class="grid grid-cols-4 gap-2">
+              <div class="h-2 rounded-full bg-[#EA580C]"></div>
+              <div class="h-2 rounded-full bg-[#EA580C]"></div>
+              <div class="h-2 rounded-full bg-[#EA580C]"></div>
+              <div class="h-2 rounded-full bg-white/20"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="navigate('builder')" class="bg-[#EA580C] text-white p-4 rounded-2xl text-left shadow-md shadow-[#EA580C]/20 transition active:scale-95">
+              <span class="text-xs font-semibold opacity-90">Interactive</span>
+              <p class="font-display font-bold text-base mt-0.5">Build Your Bowl →</p>
+              <p class="text-[11px] opacity-80 mt-1">Macro-tracked live</p>
+            </button>
+            <button onclick="navigate('detail', 1)" class="bg-white border border-[#E2E8F0] p-4 rounded-2xl text-left transition active:scale-95">
+              <span class="text-xs font-semibold text-[#EA580C]">1-Tap Reorder</span>
+              <p class="font-display font-bold text-base text-[#0F172A] mt-0.5">Harvest Sienna</p>
+              <p class="text-[11px] text-[#64748B] mt-1">610 kcal · 42g Protein</p>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-display font-bold text-base text-[#0F172A]">Autumn Harvest Lineup</h2>
+              <button onclick="navigate('bowls')" class="text-xs font-semibold text-[#EA580C]">See all →</button>
+            </div>
+            <div class="space-y-3">
+              ${bowls.slice(0, 3).map(b => `
+                <div onclick="navigate('detail', ${b.id})" class="bg-white border border-[#E2E8F0] rounded-2xl p-3.5 flex items-center justify-between cursor-pointer hover:border-[#0F172A] transition">
+                  <div class="flex items-center gap-3.5">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display font-extrabold text-sm shrink-0" style="background:${b.color}">
+                      ${b.kcal}<span class="text-[9px] font-normal ml-0.5">cal</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-[#EA580C]">${b.tag}</span>
+                      <h3 class="font-display font-bold text-sm text-[#0F172A]">${b.name}</h3>
+                      <p class="text-xs text-[#64748B] mt-0.5">${b.protein} protein · $${b.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div class="w-8 h-8 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[#0F172A] font-bold">+</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBowls() {
+      const categories = ['All', 'Warm Bowls', 'High Protein', 'Plant-Based'];
+      const filtered = state.filter === 'All' ? bowls : bowls.filter(b => b.category === state.filter);
+      return `
+        <div class="p-5 space-y-4 screen-enter">
+          <div>
+            <h1 class="text-xl font-extrabold text-[#0F172A]">Seasonal Menu</h1>
+            <p class="text-xs text-[#64748B]">Locally sourced, scratch-cooked daily</p>
+          </div>
+
+          <div class="flex gap-2 overflow-x-auto pb-1">
+            ${categories.map(c => `
+              <button onclick="state.filter='${c}'; render();" class="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${state.filter === c ? 'bg-[#0F172A] text-white' : 'bg-white border border-[#E2E8F0] text-[#475569]'}">
+                ${c}
+              </button>
+            `).join('')}
+          </div>
+
+          <div class="space-y-3">
+            ${filtered.map(b => `
+              <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-3">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#F1F5F9] text-[#0F172A]">${b.tag}</span>
+                    <h3 class="font-display font-bold text-base text-[#0F172A] mt-1">${b.name}</h3> </div> <span class="font-display font-extrabold text-base text-[#EA580C]">$${b.price.toFixed(2)}</span>
+                </div>
+                <p class="text-xs text-[#64748B] leading-relaxed">${b.desc}</p>
+                <div class="flex items-center justify-between pt-2 border-t border-[#F1F5F9]">
+                  <div class="flex gap-3 text-[11px] font-semibold text-[#475569]">
+                    <span>🔥 ${b.kcal} kcal</span>
+                    <span>💪 ${b.protein} P</span>
+                    <span>🌾 ${b.carbs} C</span>
+                  </div>
+                  <div class="flex gap-2">
+                    <button onclick="navigate('detail', ${b.id})" class="px-3 py-1.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#0F172A]">Details</button>
+                    <button onclick="addBowlToBag(${b.id})" class="px-3 py-1.5 rounded-xl bg-[#0F172A] text-white text-xs font-semibold">+ Add</button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetail() {
+      const b = bowls.find(x => x.id === state.selectedBowlId) || bowls[0];
+      return `
+        <div class="p-5 space-y-5 screen-enter">
+          <button onclick="navigate('bowls')" class="text-xs font-semibold text-[#64748B] flex items-center gap-1">
+            ← Back to Menu
+          </button>
+
+          <div class="rounded-3xl p-6 text-white relative" style="background:${b.color}">
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full">${b.tag}</span>
+            <h1 class="font-display font-extrabold text-2xl mt-3">${b.name}</h1>
+            <p class="text-xs opacity-90 mt-1">${b.category} · Chef Crafted</p>
+            <div class="mt-5 flex items-baseline justify-between">
+              <span class="text-2xl font-display font-extrabold">$${b.price.toFixed(2)}</span>
+              <span class="text-xs bg-black/25 px-3 py-1 rounded-full">Ready in 6–8 mins</span>
+            </div>
+          </div>
+
+          <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Macro Breakdown</h3>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div class="bg-[#F8FAFC] p-2.5 rounded-xl">
+                <p class="text-sm font-extrabold text-[#0F172A]">${b.kcal}</p>
+                <p class="text-[10px] text-[#64748B]">Calories</p>
+              </div>
+              <div class="bg-[#F8FAFC] p-2.5 rounded-xl">
+                <p class="text-sm font-extrabold text-[#EA580C]">${b.protein}</p>
+                <p class="text-[10px] text-[#64748B]">Protein</p>
+              </div>
+              <div class="bg-[#F8FAFC] p-2.5 rounded-xl">
+                <p class="text-sm font-extrabold text-[#0F172A]">${b.carbs}</p>
+                <p class="text-[10px] text-[#64748B]">Carbs</p>
+              </div>
+              <div class="bg-[#F8FAFC] p-2.5 rounded-xl">
+                <p class="text-sm font-extrabold text-[#0F172A]">${b.fats}</p>
+                <p class="text-[10px] text-[#64748B]">Healthy Fat</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#64748B]">Ingredients & Provenance</h3>
+            <p class="text-xs text-[#0F172A] leading-relaxed">${b.desc}</p>
+            <p class="text-[11px] text-emerald-700 font-medium pt-1">✓ 100% Seed-Oil Free · Organic Greens from Hudson Valley Farms</p>
+          </div>
+
+          <div class="flex gap-3 pt-1">
+            <button onclick="navigate('builder')" class="flex-1 py-3.5 rounded-2xl border border-[#0F172A] text-[#0F172A] font-display font-bold text-xs">Customize</button>
+            <button onclick="addBowlToBag(${b.id})" class="flex-1 py-3.5 rounded-2xl bg-[#EA580C] text-white font-display font-bold text-xs shadow-lg shadow-[#EA580C]/25">Add to Bag · $${b.price.toFixed(2)}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBuilder() {
+      return `
+        <div class="p-5 space-y-5 screen-enter">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#EA580C]">Interactive Studio</span>
+              <h1 class="text-xl font-extrabold text-[#0F172A]">Custom Bowl Toss</h1>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-extrabold text-[#0F172A]">590 kcal</span>
+              <p class="text-[10px] font-semibold text-emerald-600">44g Protein</p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-[#475569]">1. Choose Your Base</label>
+            <div class="grid grid-cols-1 gap-2">
+              ${builderOptions.bases.map(base => `
+                <button onclick="state.builder.base='${base}'; render();" class="p-3 rounded-xl border text-left text-xs font-semibold flex justify-between items-center ${state.builder.base === base ? 'border-[#EA580C] bg-[#EA580C]/5 text-[#0F172A]' : 'border-[#E2E8F0] bg-white text-[#475569]'}">
+                  <span>${base}</span>
+                  <span>${state.builder.base === base ? '●' : '○'}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-[#475569]">2. Select Protein</label>
+            <div class="grid grid-cols-1 gap-2">
+              ${builderOptions.proteins.map(p => `
+                <button onclick="state.builder.protein='${p}'; render();" class="p-3 rounded-xl border text-left text-xs font-semibold flex justify-between items-center ${state.builder.protein === p ? 'border-[#EA580C] bg-[#EA580C]/5 text-[#0F172A]' : 'border-[#E2E8F0] bg-white text-[#475569]'}">
+                  <span>${p}</span>
+                  <span>${state.builder.protein === p ? '●' : '○'}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-[#475569]">3. Crunch & Toppings (Up to 4)</label>
+              <span class="text-xs font-bold text-[#EA580C]">${state.builder.toppings.length}/4</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              ${builderOptions.toppings.map(top => {
+                const active = state.builder.toppings.includes(top);
+                return `
+                  <button onclick="toggleTopping('${top}')" class="p-2.5 rounded-xl border text-left text-xs font-semibold transition ${active ? 'bg-[#0F172A] text-white border-[#0F172A]' : 'bg-white text-[#475569] border-[#E2E8F0]'}">
+                    ${active ? '✓ ' : '+ '}${top}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-[#475569]">4. Scratch Dressing</label>
+            <div class="grid grid-cols-2 gap-2">
+              ${builderOptions.dressings.map(d => `
+                <button onclick="state.builder.dressing='${d}'; render();" class="p-2.5 rounded-xl border text-xs font-semibold ${state.builder.dressing === d ? 'border-[#EA580C] bg-[#EA580C] text-white' : 'bg-white border-[#E2E8F0] text-[#475569]'}">
+                  ${d}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <button onclick="addCustomBowlToBag()" class="w-full py-4 rounded-2xl bg-[#EA580C] text-white font-display font-bold text-sm shadow-lg shadow-[#EA580C]/25">
+            Toss & Add to Bag · $15.50
+          </button>
+        </div>
+      `;
+    }
+
+    function renderClubs() {
+      return `
+        <div class="p-5 space-y-4 screen-enter">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#EA580C]">Community Rituals</span>
+            <h1 class="text-xl font-extrabold text-[#0F172A]">Toss Supper & Run Clubs</h1>
+            <p class="text-xs text-[#64748B]">Connect IRL over movement and whole food</p>
+          </div>
+
+          <div class="space-y-3">
+            ${clubs.map(c => {
+              const joined = state.joinedClubs.includes(c.name);
+              return `
+                <div class="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-3">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="font-display font-bold text-base text-[#0F172A]">${c.name}</h3>
+                      <p class="text-xs text-[#64748B] mt-0.5">${c.schedule} ·${c.location}</p>
+                    </div>
+                    <span class="text-[10px] font-bold bg-[#F1F5F9] px-2.5 py-1 rounded-full text-[#0F172A]">${c.members} members</span>
+                  </div>
+                  <div class="bg-[#F8FAFC] px-3 py-2 rounded-xl text-xs text-[#475569]">
+                    🎁 <strong class="text-[#0F172A]">Member Perk:</strong> ${c.perk}
+                  </div>
+                  <button onclick="toggleClub('${c.name}')" class="w-full py-2.5 rounded-xl text-xs font-bold transition ${joined ? 'bg-emerald-600 text-white' : 'bg-[#0F172A] text-white'}">
+                    ${joined ? '✓ RSVP Confirmed (Tap to Leave)' : 'Join Club & RSVP Free'}
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderOrders() {
+      const subtotal = state.bag.reduce((sum, item) => sum + item.price, 0);
+      return `
+        <div class="p-5 space-y-5 screen-enter">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#EA580C]">Express Pickup</span>
+            <h1 class="text-xl font-extrabold text-[#0F172A]">Your Pickup Bag</h1>
+          </div>
+
+          <div class="bg-[#0F172A] text-white p-4 rounded-2xl space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B]">● Kitchen Live Status</span>
+              <span class="text-xs font-bold">Cubby #04</span>
+            </div>
+            <p class="font-display font-bold text-sm">SoHo Flagship · 542 Broadway</p>
+            <div class="w-full bg-white/15 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-[#EA580C] h-full w-2/3"></div>
+            </div>
+            <p class="text-[11px] text-[#94A3B8]">Prep time ~6 mins after checkout</p>
+          </div>
+
+          <div class="space-y-2.5">
+            ${state.bag.map((item, idx) => `
+              <div class="bg-white border border-[#E2E8F0] p-3.5 rounded-2xl flex items-center justify-between">
+                <div>
+                  <h3 class="font-display font-bold text-sm text-[#0F172A]">${item.name}</h3>
+                  <p class="text-xs text-[#64748B]">${item.note} · ${item.kcal} kcal</p> </div> <div class="flex items-center gap-3"> <span class="font-display font-bold text-sm text-[#0F172A]">$${item.price.toFixed(2)}</span>
+                  <button onclick="state.bag.splice(${idx},1); render();" class="text-xs text-[#94A3B8] hover:text-red-500">✕</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="bg-white border border-[#E2E8F0] p-4 rounded-2xl space-y-2 text-xs">
+            <div class="flex justify-between text-[#64748B]">
+              <span>Subtotal</span>
+              <span>$${subtotal.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between text-emerald-600 font-semibold">
+              <span>Run Club Member Perk</span>
+              <span>-$2.00</span>
+            </div>
+            <div class="flex justify-between text-sm font-extrabold text-[#0F172A] pt-2 border-t border-[#F1F5F9]">
+              <span>Total</span>
+              <span>$${Math.max(0, subtotal - 2).toFixed(2)}</span>
+            </div>
+          </div>
+
+          <button onclick="alert('Order sent to SoHo Kitchen Cubby #04!')" class="w-full py-4 rounded-2xl bg-[#EA580C] text-white font-display font-bold text-sm shadow-lg shadow-[#EA580C]/25">
+            Apple Pay · Place Pickup Order
+          </button>
+        </div>
+      `;
+    }
+
+    function render() {
+      const viewport = document.getElementById('screen-viewport');
+      if (state.screen === 'home') viewport.innerHTML = renderHome();
+      else if (state.screen === 'bowls') viewport.innerHTML = renderBowls();
+      else if (state.screen === 'detail') viewport.innerHTML = renderDetail();
+      else if (state.screen === 'builder') viewport.innerHTML = renderBuilder();
+      else if (state.screen === 'clubs') viewport.innerHTML = renderClubs();
+      else if (state.screen === 'orders') viewport.innerHTML = renderOrders();
+      updateNavHighlight();
+    }
+
+    render();
+  </script>
+</body>
+</html>
